@@ -2,12 +2,6 @@
 
 # Audio Artifacts Detection ML Project
 
-[![Contributors][contributors-shield]][contributors-url]  
-[![Forks][forks-shield]][forks-url]  
-[![Stars][stars-shield]][stars-url]  
-[![Issues][issues-shield]][issues-url]  
-[![License][license-shield]][license-url]  
-
 ---
 
 ## Table of Contents
@@ -76,14 +70,4 @@ Jedrzej Ogrodowski (JDOG)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-[contributors-shield]: https://img.shields.io/github/contributors/OgrodowskiJedrzej/audio-artifacts-classification.svg?style=for-the-badge
-[contributors-url]: https://github.com/OgrodowskiJedrzej/audio-artifacts-classification/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/OgrodowskiJedrzej/audio-artifacts-classification.svg?style=for-the-badge
-[forks-url]: https://github.com/OgrodowskiJedrzej/audio-artifacts-classification/network/members
-[stars-shield]: https://img.shields.io/github/stars/OgrodowskiJedrzej/audio-artifacts-classification.svg?style=for-the-badge
-[stars-url]: https://github.com/OgrodowskiJedrzej/audio-artifacts-classification/stargazers
-[issues-shield]: https://img.shields.io/github/issues/OgrodowskiJedrzej/audio-artifacts-classification.svg?style=for-the-badge
-[issues-url]: https://github.com/OgrodowskiJedrzej/audio-artifacts-classification/issues
-[license-shield]: https://img.shields.io/github/license/OgrodowskiJedrzej/audio-artifacts-classification.svg?style=for-the-badge
-[license-url]: https://github.com/OgrodowskiJedrzej/audio-artifacts-classification/blob/master/LICENSE.txt
 [product-screenshot]: images/screenshot.png
