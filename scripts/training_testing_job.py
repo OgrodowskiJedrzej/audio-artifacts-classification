@@ -1,4 +1,3 @@
-
 from azure.identity import DefaultAzureCredential
 from azure.ai.ml import MLClient, Input, command
 
@@ -11,7 +10,7 @@ ml_client = MLClient(
     resource_group_name=AZURE_RESOURCE_GROUP,
     workspace_name=AZURE_WORKSPACE_NAME
 )
-
+# TODO: Add config.yml to job.
 job = command(
     code="./src/",
     command="python main.py --data_path ${{inputs.data}} ",

@@ -1,4 +1,3 @@
-
 from azure.ai.ml import MLClient
 from azure.ai.ml.entities import Model, ManagedOnlineDeployment, CodeConfiguration, ManagedOnlineEndpoint
 from azure.identity import DefaultAzureCredential
