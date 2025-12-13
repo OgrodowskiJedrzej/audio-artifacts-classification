@@ -5,16 +5,14 @@ from azure.ai.ml import MLClient, command, Input
 from azure.ai.ml.sweep import Choice, Uniform
 from azure.ai.ml.sweep import MedianStoppingPolicy
 
-from src.config import cfg
+from src.config import AZURE_SUBSCRIPTION_ID, AZURE_RESOURCE_GROUP, AZURE_WORKSPACE_NAME, AZURE_COMPUTER_TARGET
 
-load_dotenv()
 credential = DefaultAzureCredential()
-
 ml_client = MLClient(
     credential=credential,
-    subscription_id=cfg.subscription_id,
-    resource_group_name=cfg.resource_group_name,
-    workspace_name=cfg.workspace_name
+    subscription_id=AZURE_SUBSCRIPTION_ID,
+    resource_group_name=AZURE_RESOURCE_GROUP,
+    workspace_name=AZURE_WORKSPACE_NAME
 )
 
 base_command = (
@@ -31,7 +29,7 @@ command_job = command(
     code="./src/",
     command=base_command,
     environment="pytorch-audio-env@latest",
-    compute=cfg.compute_target,
+    compute=AZURE_COMPUTER_TARGET,
     inputs={
         "data": Input(type="uri_folder", path="azureml:audio_dataset:1"),
         "pretrained_lr": 1e-4,
@@ -49,7 +47,7 @@ command_job_for_sweep = command_job(
 )
 
 sweep_job = command_job_for_sweep.sweep(
-    compute=cfg.compute_target,
+    compute=AZURE_COMPUTER_TARGET,
     sampling_algorithm="bayesian",
     primary_metric="test_f1_score",
     goal="Maximize",

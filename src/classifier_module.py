@@ -9,7 +9,11 @@ from models.resnet import ResNet54
 from config import cfg
 
 class PANNBasedClassifier(nn.Module):
-    def __init__(self, model_type: Literal["wavegram_logmel", "resnet"] = "wavegram_logmel", num_classes: int = 2, freeze_panns: bool = True, unfreeze_last_layers: int = 0, device: torch.device | None = None):
+    def __init__(self, model_type: Literal["wavegram_logmel", "resnet"] = "wavegram_logmel",
+                num_classes: int = 2,
+                freeze_panns: bool = True,
+                unfreeze_last_layers: int = 0,
+                device: torch.device | None = None):
         super().__init__()
 
         if device is None:
@@ -20,7 +24,7 @@ class PANNBasedClassifier(nn.Module):
         self.panns_model = None
 
         if model_type == "wavegram_logmel":
-            panns_weights_path = cfg.wavegram_logmel_weights_path
+            panns_weights_path = cfg["weights"]["wavegram_logmel_weights"]
             self.panns_model = Wavegram_Logmel_Cnn14(
                 sample_rate=32000,
                 window_size=1024,
@@ -32,7 +36,7 @@ class PANNBasedClassifier(nn.Module):
             )
 
         if model_type == "resnet":
-            panns_weights_path = cfg.resnet_weights_path
+            panns_weights_path = cfg["weights"]["resnet_weights"]
             self.panns_model = ResNet54(
                 sample_rate=32000,
                 window_size=1024,

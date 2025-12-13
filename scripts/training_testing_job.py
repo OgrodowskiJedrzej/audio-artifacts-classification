@@ -2,22 +2,21 @@
 from azure.identity import DefaultAzureCredential
 from azure.ai.ml import MLClient, Input, command
 
-from src.config import cfg
+from src.config import AZURE_SUBSCRIPTION_ID, AZURE_RESOURCE_GROUP, AZURE_WORKSPACE_NAME, AZURE_COMPUTER_TARGET
 
 credential = DefaultAzureCredential()
-
 ml_client = MLClient(
     credential=credential,
-    subscription_id=cfg.subscription_id,
-    resource_group_name=cfg.resource_group_name,
-    workspace_name=cfg.workspace_name
+    subscription_id=AZURE_SUBSCRIPTION_ID,
+    resource_group_name=AZURE_RESOURCE_GROUP,
+    workspace_name=AZURE_WORKSPACE_NAME
 )
 
 job = command(
     code="./src/",
     command="python main.py --data_path ${{inputs.data}} ",
     environment="pytorch-audio-env@latest",
-    compute=cfg.compute_target,
+    compute=AZURE_COMPUTER_TARGET,
     display_name="cluster-gpu-training-test",
     experiment_name="cluster-training-wavegram_5s",
     instance_count=1,

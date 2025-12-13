@@ -15,7 +15,7 @@ def init_bn(bn):
     bn.weight.data.fill_(1.)
 
 def do_mixup(x, mixup_lambda):
-    """Mixup x of even indexes (0, 2, 4, ...) with x of odd indexes 
+    """Mixup x of even indexes (0, 2, 4, ...) with x of odd indexes
     (1, 3, 5, ...).
 
     Args:
