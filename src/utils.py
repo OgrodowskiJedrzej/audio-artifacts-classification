@@ -18,9 +18,7 @@ def convert_stereo_to_mono(waveform: Tensor) -> Tensor:
     return waveform
 
 def load_and_resample(path: str, sample_rate: int = 32000) -> Tensor:
-    """
-    Loads wav file, converts to mono and resamples to given sample rate.
-    """
+    """Loads wav file, converts to mono and resamples to given sample rate."""
     waveform, sr = torchaudio.load(path)
     waveform = convert_stereo_to_mono(waveform)
 
@@ -31,9 +29,7 @@ def load_and_resample(path: str, sample_rate: int = 32000) -> Tensor:
     return waveform
 
 def split_wav_into_chunks(waveform: Tensor, sample_rate: int, interval: float, overlapping_ratio: float) -> list:
-    """
-    Splits wav file into chunks overlapping with length specified in interval.
-    """
+    """Splits wav file into chunks of given length overlapping by given ratio."""
     segment_len = sample_rate * interval
     # Overlap ratio (e.g. 0.25 means each new chunk starts 75% into previous -> 25% overlap kept)
     overlap_ratio = overlapping_ratio
@@ -61,7 +57,8 @@ def load_model(model_path: str, model_type=Literal["wavegram_logmel", "resnet"])
     model.eval()
     return model
 
-def generate_spectrogram(path):
+def generate_spectrogram(path: str) -> str | None:
+    """Generate spectrograme of given wav file."""
     output_dir = "spectrograms"
     os.makedirs(output_dir, exist_ok=True)
 

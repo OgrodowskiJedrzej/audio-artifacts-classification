@@ -41,7 +41,7 @@ def test_freeze_unfreeze_layers(model_type):
     trainable_found = False
     frozen_found = False
 
-    for name, param in model.panns_model.named_parameters():
+    for _, param in model.panns_model.named_parameters():
         if param.requires_grad:
             trainable_found = True
         else:

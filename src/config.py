@@ -1,16 +1,19 @@
+import os
+import yaml
 from dotenv import load_dotenv
-from pydantic import BaseModel
 
 load_dotenv()
 
-class Config(BaseModel):
-    sample_rate: int = 32000
-    wavegram_logmel_weights_path: str = "Wavegram_Logmel_Cnn14_mAP=0.439.pth"
-    resnet_weights_path: str = "ResNet54_mAP=0.429.pth"
+def load_config(path="config.yml"):
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"Config file not found: {path}")
 
-    # compute_target: str = Field(default_factory=lambda: os.environ["CLUSTER_NAME"])
-    # subscription_id: str = Field(default_factory=lambda: os.environ["SUBSCRIPTION_ID"])
-    # resource_group_name: str = Field(default_factory=lambda: os.environ["RESOURCE_GROUP_NAME"])
-    # workspace_name: str = Field(default_factory=lambda: os.environ["WORKSPACE_NAME"])
+    with open(path, "r") as f:
+        return yaml.safe_load(f)
 
-cfg = Config()
+AZURE_SUBSCRIPTION_ID = os.getenv("SUBSCRIPTION_ID")
+AZURE_RESOURCE_GROUP = os.getenv("RESOURCE_GROUP_NAME")
+AZURE_WORKSPACE_NAME = os.getenv("WORKSPACE_NAME")
+AZURE_COMPUTER_TARGET = os.getenv("COMPUTE_TARGET")
+
+cfg = load_config()
