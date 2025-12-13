@@ -23,8 +23,8 @@ class AudioArtifactsDataset(Dataset):
         relative_path = self.dataset_file.iloc[idx]["path"]
         full_path = os.path.join(self.data_path, relative_path)
         target = self.dataset_file.iloc[idx]["class"]
-        waveform = load_and_resample(full_path, cfg.sample_rate)
-        target_length = cfg.sample_rate * self.interval
+        waveform = load_and_resample(full_path, cfg["data"]["sample_rate"])
+        target_length = cfg["data"]["sample_rate"] * self.interval
         if waveform.shape[-1] >= target_length:
             max_start = waveform.shape[-1] - target_length
             start = random.randint(0, max_start) if max_start > 0 else 0
