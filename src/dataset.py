@@ -6,8 +6,8 @@ import os
 import pandas as pd
 import random
 
-from config import cfg
-from utils import load_and_resample
+from src.config import cfg
+from src.utils import load_and_resample
 
 class AudioArtifactsDataset(Dataset):
     def __init__(self, csv_path: str, data_path: str | None = None, interval: int = 1):

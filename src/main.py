@@ -6,11 +6,11 @@ from torch import nn
 from torch.utils.data import DataLoader
 import mlflow
 
-from dataset import AudioArtifactsDataset, calculate_class_weights
-from classifier_module import PANNBasedClassifier
-from train import training_loop
-from evaluate import test
-from config import cfg
+from src.dataset import AudioArtifactsDataset, calculate_class_weights
+from src.classifier_module import PANNBasedClassifier
+from src.train import training_loop
+from src.evaluate import test
+from src.config import cfg
 
 def parse_args():
     parser = argparse.ArgumentParser()

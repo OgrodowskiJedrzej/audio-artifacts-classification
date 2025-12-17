@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from torchlibrosa.stft import Spectrogram, LogmelFilterBank
 from torchlibrosa.augmentation import SpecAugmentation
 
-from models.common_architecture import ConvBlock, do_mixup, init_bn, init_layer
+from src.models.common_architecture import ConvBlock, do_mixup, init_bn, init_layer
 
 def _resnet_conv1x1(in_planes, out_planes):
     #1x1 convolution
