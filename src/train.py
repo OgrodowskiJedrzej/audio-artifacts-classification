@@ -3,7 +3,7 @@ from torch.utils.data import DataLoader
 from torch.optim import AdamW, lr_scheduler
 import mlflow
 
-from classifier_module import PANNBasedClassifier
+from src.classifier_module import PANNBasedClassifier
 
 def training_loop(
     train_dataloader: DataLoader,

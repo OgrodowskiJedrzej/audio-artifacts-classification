@@ -6,7 +6,7 @@ from torch import Tensor
 import torchaudio
 import matplotlib.pyplot as plt
 
-from classifier_module import PANNBasedClassifier
+from src.classifier_module import PANNBasedClassifier
 
 def convert_stereo_to_mono(waveform: Tensor) -> Tensor:
     """Conversion from stereo to mono via averaging channels."""

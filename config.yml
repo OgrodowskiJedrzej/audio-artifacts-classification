@@ -23,5 +23,5 @@ model:
   unfreeze_last_layers: 3
 
 weights:
-  wavegram_logmel_weights: Wavegram_Logmel_Cnn14_mAP=0.439.pth
+  wavegram_logmel_weights: src/Wavegram_Logmel_Cnn14_mAP=0.439.pth
   resnet_weights: Placeholder.pth

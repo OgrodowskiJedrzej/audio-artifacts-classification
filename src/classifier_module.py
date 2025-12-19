@@ -4,9 +4,9 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-from models.wavegram import Wavegram_Logmel_Cnn14
-from models.resnet import ResNet54
-from config import cfg
+from src.models.wavegram import Wavegram_Logmel_Cnn14
+from src.models.resnet import ResNet54
+from src.config import cfg
 
 class PANNBasedClassifier(nn.Module):
     def __init__(self, model_type: Literal["wavegram_logmel", "resnet"] = "wavegram_logmel",
