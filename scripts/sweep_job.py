@@ -23,6 +23,7 @@ base_command = (
     "--unfreeze_last_layers ${{inputs.unfreeze_last_layers}} "
     "--weight_decay ${{inputs.weight_decay}} "
     "--batch_size ${{inputs.batch_size}} "
+    "--train "
 )
 
 command_job = command(

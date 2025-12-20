@@ -13,7 +13,7 @@ ml_client = MLClient(
 # TODO: Add config.yml to job.
 job = command(
     code="./src/",
-    command="python main.py --data_path ${{inputs.data}} ",
+    command="python main.py --data_path ${{inputs.data}} --train ",
     environment="pytorch-audio-env@latest",
     compute=AZURE_COMPUTER_TARGET,
     display_name="cluster-gpu-training-test",
