@@ -1,6 +1,5 @@
 $schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
 
-name: audio-train
 display_name: cluster-gpu-training
 experiment_name: cluster-training-wavegram_5s
 
@@ -8,7 +7,7 @@ experiment_name: cluster-training-wavegram_5s
 code: ../audio_artifacts
 
 command: >
-  python main.py
+  python -m src.main
   --data_path ${{inputs.data}}
   --train
 
@@ -19,7 +18,3 @@ inputs:
   data:
     type: uri_folder
     path: azureml:audio_artifacts_dataset:V1.0
-  
-  config_file:
-    type: uri_file
-    path: azureml:audio_config:1

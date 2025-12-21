@@ -206,6 +206,7 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 
-models/
+trained_models/
 *.pth
 /dataset
+todo.txt

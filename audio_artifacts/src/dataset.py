@@ -6,7 +6,7 @@ import os
 import pandas as pd
 import random
 
-from src.config import cfg
+from .config import cfg
 from src.utils import load_and_resample
 
 class AudioArtifactsDataset(Dataset):

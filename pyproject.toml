@@ -50,7 +50,8 @@ quote-style = "double"
 
 
 [tool.pytest.ini_options]
-pythonpath = [".", "src", "tests"]
+pythonpath = "audio_artifacts"
+testpaths = "audio_artifacts/tests"
 markers = [
     "utils: tests for utils functions",
     "dataset: tests for dataset functions",

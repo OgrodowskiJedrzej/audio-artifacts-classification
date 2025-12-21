@@ -23,6 +23,7 @@ def parse_args():
     parser.add_argument("--max_lr_head", type=float, default=cfg["optimizer"]["max_lr_head"], help="OneCycle max LR for head")
     parser.add_argument("--unfreeze_last_layers", type=int, default=cfg["model"]["unfreeze_last_layers"], choices=[0,1,2,3], help="How many last PANNs conv blocks to unfreeze")
     parser.add_argument("--weight_decay", type=float, default=cfg["optimizer"]["weight_decay"], help="L2 regularization")
+    parser.add_argument("--train", action="store_true")
 
     return parser.parse_args()
 
@@ -69,19 +70,20 @@ def main():
         criterion = nn.CrossEntropyLoss(weight=class_weights)
 
         print(f"Device: {device}")
-        print("Starting training...")
-        model = training_loop(
-            train_dataloader,
-            val_dataloader,
-            epochs=args.epochs,
-            pretrained_lr=args.pretrained_lr,
-            head_lr=args.head_lr,
-            model=model,
-            criterion=criterion,
-            max_lr_pt=args.max_lr_pretrained,
-            max_lr_hd=args.max_lr_head,
-            weight_decay=args.weight_decay
-        )
+        if (args.train):
+            print("Starting training...")
+            model = training_loop(
+                train_dataloader,
+                val_dataloader,
+                epochs=args.epochs,
+                pretrained_lr=args.pretrained_lr,
+                head_lr=args.head_lr,
+                model=model,
+                criterion=criterion,
+                max_lr_pt=args.max_lr_pretrained,
+                max_lr_hd=args.max_lr_head,
+                weight_decay=args.weight_decay
+            )
         print("\nStarting testing...")
         test(test_dataloader, model, criterion, device)
 
