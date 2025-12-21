@@ -5,12 +5,11 @@ import torchaudio
 
 from src.utils import split_wav_into_chunks, convert_stereo_to_mono, load_and_resample
 
+
 @pytest.fixture
 def stereo_waveform():
-    return torch.tensor([
-        [1.0, 2.0, 3.0],
-        [3.0, 2.0, 1.0]
-    ])
+    return torch.tensor([[1.0, 2.0, 3.0], [3.0, 2.0, 1.0]])
+
 
 @pytest.fixture
 def tmp_wav_file(tmp_path):
@@ -19,19 +18,15 @@ def tmp_wav_file(tmp_path):
     torchaudio.save(str(wav_path), waveform, sample_rate=48000)
     return str(wav_path)
 
+
 @pytest.mark.utils
 def test_load_and_resample(tmp_wav_file):
     result = load_and_resample(tmp_wav_file, sample_rate=32000)
 
-    error_msg = {
-        "type": "Incorrect data type, should be Tensor.",
-        "dimension": "Incorrect dimension.",
-        "shape": "Incorrect shape."
-    }
+    assert isinstance(result, torch.Tensor), "Incorrect data type, should be Tensor."
+    assert result.ndim == 1, "Incorrect dimension."
+    assert result.shape[0] == 32000, "Incorrect shape."
 
-    assert isinstance(result, torch.Tensor), error_msg["type"]
-    assert result.ndim == 1, error_msg["dimension"]
-    assert result.shape[0] == 32000, error_msg["shape"]
 
 @pytest.mark.utils
 def test_convert_stereo_to_mono(stereo_waveform):
@@ -41,6 +36,7 @@ def test_convert_stereo_to_mono(stereo_waveform):
     error_msg = "Incorrect conversion from stero to mono."
 
     assert torch.allclose(mono, expected), error_msg
+
 
 @pytest.mark.utils
 def test_split_wav_into_chunks():

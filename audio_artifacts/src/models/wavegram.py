@@ -6,20 +6,14 @@ from torchlibrosa.augmentation import SpecAugmentation
 
 from src.models.common_architecture import ConvBlock, do_mixup, init_bn, init_layer
 
+
 class ConvPreWavBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
-
         super(ConvPreWavBlock, self).__init__()
 
-        self.conv1 = nn.Conv1d(in_channels=in_channels,
-                              out_channels=out_channels,
-                              kernel_size=3, stride=1,
-                              padding=1, bias=False)
+        self.conv1 = nn.Conv1d(in_channels=in_channels, out_channels=out_channels, kernel_size=3, stride=1, padding=1, bias=False)
 
-        self.conv2 = nn.Conv1d(in_channels=out_channels,
-                              out_channels=out_channels,
-                              kernel_size=3, stride=1, dilation=2,
-                              padding=2, bias=False)
+        self.conv2 = nn.Conv1d(in_channels=out_channels, out_channels=out_channels, kernel_size=3, stride=1, dilation=2, padding=2, bias=False)
 
         self.bn1 = nn.BatchNorm1d(out_channels)
         self.bn2 = nn.BatchNorm1d(out_channels)
@@ -32,9 +26,7 @@ class ConvPreWavBlock(nn.Module):
         init_bn(self.bn1)
         init_bn(self.bn2)
 
-
     def forward(self, input, pool_size):
-
         x = input
         x = F.relu_(self.bn1(self.conv1(x)))
         x = F.relu_(self.bn2(self.conv2(x)))
@@ -42,10 +34,9 @@ class ConvPreWavBlock(nn.Module):
 
         return x
 
-class Wavegram_Logmel_Cnn14(nn.Module):
-    def __init__(self, sample_rate, window_size, hop_size, mel_bins, fmin,
-        fmax, classes_num):
 
+class Wavegram_Logmel_Cnn14(nn.Module):
+    def __init__(self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num):
         super(Wavegram_Logmel_Cnn14, self).__init__()
 
         window = "hann"
@@ -63,18 +54,13 @@ class Wavegram_Logmel_Cnn14(nn.Module):
         self.pre_block4 = ConvBlock(in_channels=4, out_channels=64)
 
         # Spectrogram extractor
-        self.spectrogram_extractor = Spectrogram(n_fft=window_size, hop_length=hop_size,
-            win_length=window_size, window=window, center=center, pad_mode=pad_mode,
-            freeze_parameters=True)
+        self.spectrogram_extractor = Spectrogram(n_fft=window_size, hop_length=hop_size, win_length=window_size, window=window, center=center, pad_mode=pad_mode, freeze_parameters=True)
 
         # Logmel feature extractor
-        self.logmel_extractor = LogmelFilterBank(sr=sample_rate, n_fft=window_size,
-            n_mels=mel_bins, fmin=fmin, fmax=fmax, ref=ref, amin=amin, top_db=top_db,
-            freeze_parameters=True)
+        self.logmel_extractor = LogmelFilterBank(sr=sample_rate, n_fft=window_size, n_mels=mel_bins, fmin=fmin, fmax=fmax, ref=ref, amin=amin, top_db=top_db, freeze_parameters=True)
 
         # Spec augmenter
-        self.spec_augmenter = SpecAugmentation(time_drop_width=64, time_stripes_num=2,
-            freq_drop_width=8, freq_stripes_num=2)
+        self.spec_augmenter = SpecAugmentation(time_drop_width=64, time_stripes_num=2, freq_drop_width=8, freq_stripes_num=2)
 
         self.bn0 = nn.BatchNorm2d(64)
 
@@ -110,8 +96,8 @@ class Wavegram_Logmel_Cnn14(nn.Module):
         a1 = self.pre_block4(a1, pool_size=(2, 1))
 
         # Log mel spectrogram
-        x = self.spectrogram_extractor(input)   # (batch_size, 1, time_steps, freq_bins)
-        x = self.logmel_extractor(x)    # (batch_size, 1, time_steps, mel_bins)
+        x = self.spectrogram_extractor(input)  # (batch_size, 1, time_steps, freq_bins)
+        x = self.logmel_extractor(x)  # (batch_size, 1, time_steps, mel_bins)
 
         x = x.transpose(1, 3)
         x = self.bn0(x)
@@ -154,4 +140,3 @@ class Wavegram_Logmel_Cnn14(nn.Module):
         output_dict = {"clipwise_output": clipwise_output, "embedding": embedding}
 
         return output_dict
-

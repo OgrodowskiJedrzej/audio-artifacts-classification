@@ -1,0 +1,8 @@
+$schema: https://azuremlschemas.azureedge.net/latest/data.schema.json
+
+name: audio_artifacts_dataset
+version: V1.0
+description: Wav files + CSV for train, validation and test sets.
+
+type: uri_folder
+path: ../dataset

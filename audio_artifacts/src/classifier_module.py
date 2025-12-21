@@ -8,12 +8,16 @@ from src.models.wavegram import Wavegram_Logmel_Cnn14
 from src.models.resnet import ResNet54
 from src.config import cfg
 
+
 class PANNBasedClassifier(nn.Module):
-    def __init__(self, model_type: Literal["wavegram_logmel", "resnet"] = "wavegram_logmel",
-                num_classes: int = 2,
-                freeze_panns: bool = True,
-                unfreeze_last_layers: int = 0,
-                device: torch.device | None = None):
+    def __init__(
+        self,
+        model_type: Literal["wavegram_logmel", "resnet"] = "wavegram_logmel",
+        num_classes: int = 2,
+        freeze_panns: bool = True,
+        unfreeze_last_layers: int = 0,
+        device: torch.device | None = None,
+    ):
         super().__init__()
 
         if device is None:
@@ -32,7 +36,7 @@ class PANNBasedClassifier(nn.Module):
                 mel_bins=64,
                 fmin=200,
                 fmax=14000,
-                classes_num=527
+                classes_num=527,
             )
 
         if model_type == "resnet":
@@ -44,7 +48,7 @@ class PANNBasedClassifier(nn.Module):
                 mel_bins=64,
                 fmin=200,
                 fmax=8000,
-                classes_num=527
+                classes_num=527,
             )
 
         try:
@@ -78,9 +82,9 @@ class PANNBasedClassifier(nn.Module):
                     layers_to_unfreeze.append("resnet.layer2")
 
         for name, param in self.panns_model.named_parameters():
-                    for layer in layers_to_unfreeze:
-                        if layer in name:
-                            param.requires_grad = True
+            for layer in layers_to_unfreeze:
+                if layer in name:
+                    param.requires_grad = True
 
         panns_embedding_size = self.panns_model.fc_audioset.in_features
 

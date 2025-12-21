@@ -1,18 +1,21 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
+
 def init_layer(layer):
-    """Initialize a Linear or Convolutional layer. """
+    """Initialize a Linear or Convolutional layer."""
     nn.init.xavier_uniform_(layer.weight)
 
     if hasattr(layer, "bias"):
         if layer.bias is not None:
-            layer.bias.data.fill_(0.)
+            layer.bias.data.fill_(0.0)
+
 
 def init_bn(bn):
-    """Initialize a Batchnorm layer. """
-    bn.bias.data.fill_(0.)
-    bn.weight.data.fill_(1.)
+    """Initialize a Batchnorm layer."""
+    bn.bias.data.fill_(0.0)
+    bn.weight.data.fill_(1.0)
+
 
 def do_mixup(x, mixup_lambda):
     """Mixup x of even indexes (0, 2, 4, ...) with x of odd indexes
@@ -25,24 +28,17 @@ def do_mixup(x, mixup_lambda):
     Returns:
       out: (batch_size, ...)
     """
-    out = (x[0 :: 2].transpose(0, -1) * mixup_lambda[0 :: 2] + \
-        x[1 :: 2].transpose(0, -1) * mixup_lambda[1 :: 2]).transpose(0, -1)
+    out = (x[0::2].transpose(0, -1) * mixup_lambda[0::2] + x[1::2].transpose(0, -1) * mixup_lambda[1::2]).transpose(0, -1)
     return out
+
 
 class ConvBlock(nn.Module):
     def __init__(self, in_channels, out_channels):
-
         super(ConvBlock, self).__init__()
 
-        self.conv1 = nn.Conv2d(in_channels=in_channels,
-                              out_channels=out_channels,
-                              kernel_size=(3, 3), stride=(1, 1),
-                              padding=(1, 1), bias=False)
+        self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
 
-        self.conv2 = nn.Conv2d(in_channels=out_channels,
-                              out_channels=out_channels,
-                              kernel_size=(3, 3), stride=(1, 1),
-                              padding=(1, 1), bias=False)
+        self.conv2 = nn.Conv2d(in_channels=out_channels, out_channels=out_channels, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
 
         self.bn1 = nn.BatchNorm2d(out_channels)
         self.bn2 = nn.BatchNorm2d(out_channels)
@@ -54,7 +50,6 @@ class ConvBlock(nn.Module):
         init_layer(self.conv2)
         init_bn(self.bn1)
         init_bn(self.bn2)
-
 
     def forward(self, input, pool_size=(2, 2), pool_type="avg"):
         x = input

@@ -12,6 +12,7 @@ from src.train import training_loop
 from src.evaluate import test
 from src.config import cfg
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--data_path", type=str, default=cfg["data"]["root"])
@@ -21,10 +22,12 @@ def parse_args():
     parser.add_argument("--head_lr", type=float, default=cfg["optimizer"]["head_lr"], help="LR for classification head")
     parser.add_argument("--max_lr_pretrained", type=float, default=cfg["optimizer"]["max_lr_pretrained"], help="OneCycle max LR for pretrained part")
     parser.add_argument("--max_lr_head", type=float, default=cfg["optimizer"]["max_lr_head"], help="OneCycle max LR for head")
-    parser.add_argument("--unfreeze_last_layers", type=int, default=cfg["model"]["unfreeze_last_layers"], choices=[0,1,2,3], help="How many last PANNs conv blocks to unfreeze")
+    parser.add_argument("--unfreeze_last_layers", type=int, default=cfg["model"]["unfreeze_last_layers"], choices=[0, 1, 2, 3], help="How many last PANNs conv blocks to unfreeze")
     parser.add_argument("--weight_decay", type=float, default=cfg["optimizer"]["weight_decay"], help="L2 regularization")
+    parser.add_argument("--train", action="store_true")
 
     return parser.parse_args()
+
 
 def main():
     args = parse_args()
@@ -32,30 +35,15 @@ def main():
     val_csv = os.path.join(args.data_path, cfg["data"]["val_csv"])
     test_csv = os.path.join(args.data_path, cfg["data"]["test_csv"])
 
-    train_dataset = AudioArtifactsDataset(
-        csv_path=train_csv,
-        data_path=args.data_path,
-        interval=cfg["training"]["interval"]
-    )
+    train_dataset = AudioArtifactsDataset(csv_path=train_csv, data_path=args.data_path, interval=cfg["training"]["interval"])
 
-    test_dataset = AudioArtifactsDataset(
-        csv_path=test_csv,
-        data_path=args.data_path,
-        interval=cfg["training"]["interval"]
-    )
+    test_dataset = AudioArtifactsDataset(csv_path=test_csv, data_path=args.data_path, interval=cfg["training"]["interval"])
 
-    val_dataset = AudioArtifactsDataset(
-        csv_path=val_csv,
-        data_path=args.data_path,
-        interval=cfg["training"]["interval"]
-    )
+    val_dataset = AudioArtifactsDataset(csv_path=val_csv, data_path=args.data_path, interval=cfg["training"]["interval"])
 
-    train_dataloader = DataLoader(
-        train_dataset, batch_size=args.batch_size, shuffle=True)
-    test_dataloader = DataLoader(
-        test_dataset, batch_size=args.batch_size, shuffle=False)
-    val_dataloader = DataLoader(
-        val_dataset, batch_size=args.batch_size, shuffle=False)
+    train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
+    test_dataloader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False)
+    val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
 
     with mlflow.start_run() as run:
         mlflow.log_params(vars(args))
@@ -69,19 +57,20 @@ def main():
         criterion = nn.CrossEntropyLoss(weight=class_weights)
 
         print(f"Device: {device}")
-        print("Starting training...")
-        model = training_loop(
-            train_dataloader,
-            val_dataloader,
-            epochs=args.epochs,
-            pretrained_lr=args.pretrained_lr,
-            head_lr=args.head_lr,
-            model=model,
-            criterion=criterion,
-            max_lr_pt=args.max_lr_pretrained,
-            max_lr_hd=args.max_lr_head,
-            weight_decay=args.weight_decay
-        )
+        if args.train:
+            print("Starting training...")
+            model = training_loop(
+                train_dataloader,
+                val_dataloader,
+                epochs=args.epochs,
+                pretrained_lr=args.pretrained_lr,
+                head_lr=args.head_lr,
+                model=model,
+                criterion=criterion,
+                max_lr_pt=args.max_lr_pretrained,
+                max_lr_hd=args.max_lr_head,
+                weight_decay=args.weight_decay,
+            )
         print("\nStarting testing...")
         test(test_dataloader, model, criterion, device)
 
@@ -95,6 +84,7 @@ def main():
             mlflow.pytorch.log_model(model, name="wavegram_logmel_trained")
         except Exception as e:
             print(f"Could not log model: {e}")
+
 
 if __name__ == "__main__":
     main()

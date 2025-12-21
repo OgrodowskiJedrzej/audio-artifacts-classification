@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 
 from src.classifier_module import PANNBasedClassifier
 
+
 def convert_stereo_to_mono(waveform: Tensor) -> Tensor:
     """Conversion from stereo to mono via averaging channels."""
     if waveform.shape[0] > 1:
@@ -16,6 +17,7 @@ def convert_stereo_to_mono(waveform: Tensor) -> Tensor:
         waveform = waveform.squeeze(0)
 
     return waveform
+
 
 def load_and_resample(path: str, sample_rate: int = 32000) -> Tensor:
     """Loads wav file, converts to mono and resamples to given sample rate."""
@@ -28,6 +30,7 @@ def load_and_resample(path: str, sample_rate: int = 32000) -> Tensor:
 
     return waveform
 
+
 def split_wav_into_chunks(waveform: Tensor, sample_rate: int, interval: float, overlapping_ratio: float) -> list:
     """Splits wav file into chunks of given length overlapping by given ratio."""
     segment_len = sample_rate * interval
@@ -39,12 +42,13 @@ def split_wav_into_chunks(waveform: Tensor, sample_rate: int, interval: float, o
 
     chunks = []
     for start in range(0, max(0, waveform.shape[0] - segment_len + 1), hop_len):
-        chunk = waveform[start:start + segment_len]
+        chunk = waveform[start : start + segment_len]
         if chunk.shape[0] < segment_len:
             chunk = torch.nn.functional.pad(chunk, (0, segment_len - chunk.shape[0]))
         chunks.append(chunk)
 
     return chunks
+
 
 def load_model(model_path: str, model_type=Literal["wavegram_logmel", "resnet"]) -> PANNBasedClassifier:
     """Loads model and sets up for evaluation."""
@@ -56,6 +60,7 @@ def load_model(model_path: str, model_type=Literal["wavegram_logmel", "resnet"])
     model.to(device)
     model.eval()
     return model
+
 
 def generate_spectrogram(path: str) -> str | None:
     """Generate spectrograme of given wav file."""
@@ -76,7 +81,7 @@ def generate_spectrogram(path: str) -> str | None:
         for c in range(n_channels):
             ax = axes[c, 0]
             ax.specgram(waveform[c], Fs=sample_rate, NFFT=NFFT, noverlap=noverlap)
-            ax.set_ylabel(f"Channel {c+1} Frequency [Hz]")
+            ax.set_ylabel(f"Channel {c + 1} Frequency [Hz]")
             ax.set_xlabel("Time [s]")
             ax.set_ylim(0, 14000)
 

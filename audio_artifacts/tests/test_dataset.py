@@ -5,21 +5,21 @@ from unittest.mock import patch
 
 from src.dataset import AudioArtifactsDataset, calculate_class_weights
 
+
 @pytest.fixture
 def tmp_csv(tmp_path):
-    df = pd.DataFrame({
-        "path": ["a.wav", "b.wav", "c.wav"],
-        "class": ["no_artifact", "artifact", "artifact"]
-    })
+    df = pd.DataFrame({"path": ["a.wav", "b.wav", "c.wav"], "class": ["no_artifact", "artifact", "artifact"]})
     csv_path = tmp_path / "data.csv"
     df.to_csv(csv_path, sep=";", index=False)
     return csv_path
+
 
 @pytest.fixture
 def mock_load_and_resample():
     with patch("src.dataset.load_and_resample") as mock_load:
         mock_load.return_value = torch.randn(32000)  # exactly 1 second @ 32kHz
         yield mock_load
+
 
 @pytest.mark.dataset
 def test_dataset_length(tmp_csv, mock_load_and_resample):
@@ -28,6 +28,7 @@ def test_dataset_length(tmp_csv, mock_load_and_resample):
     error_msg = "Incorrect dataset length."
 
     assert len(ds) == 3, error_msg
+
 
 @pytest.mark.dataset
 def test_label_encoding(tmp_csv, mock_load_and_resample):
@@ -38,9 +39,10 @@ def test_label_encoding(tmp_csv, mock_load_and_resample):
 
     error_msg = "Incorrect label encoding."
 
-    assert y0 == 0, error_msg        # "no_artifact"
-    assert y1 == 1, error_msg        # "artifact"
+    assert y0 == 0, error_msg  # "no_artifact"
+    assert y1 == 1, error_msg  # "artifact"
     assert y2 == 1, error_msg
+
 
 @pytest.mark.dataset
 def test_padding(tmp_csv):
@@ -55,6 +57,7 @@ def test_padding(tmp_csv):
 
         assert waveform.shape[0] == 32000, error_msg
 
+
 @pytest.mark.dataset
 def test_truncation(tmp_csv):
     with patch("src.dataset.load_and_resample") as mock_load:
@@ -67,6 +70,7 @@ def test_truncation(tmp_csv):
 
         assert waveform.shape[0] == 32000, error_msg
 
+
 @pytest.mark.dataset
 def test_class_weights(tmp_csv, mock_load_and_resample):
     ds = AudioArtifactsDataset(str(tmp_csv), data_path="/dummy")
@@ -74,15 +78,7 @@ def test_class_weights(tmp_csv, mock_load_and_resample):
 
     weights = calculate_class_weights(ds, device=device)
 
-    error_msg = {
-        "type": "Incorrect data type of weights.",
-        "shape": "Incorrect shape of weights.",
-        "values": "Negative weights.",
-        "device": "Wrong device."
-    }
-
-    assert isinstance(weights, torch.Tensor), error_msg["type"]
-    assert weights.shape == (2,), error_msg["shape"]
-    assert torch.all(weights > 0), error_msg["values"]
-    assert weights.device == device, error_msg["device"]
-
+    assert isinstance(weights, torch.Tensor), "Incorrect data type of weights."
+    assert weights.shape == (2,), "Incorrect shape of weights."
+    assert torch.all(weights > 0), "Negative weights."
+    assert weights.device == device, "Wrong device."

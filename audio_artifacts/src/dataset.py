@@ -6,8 +6,9 @@ import os
 import pandas as pd
 import random
 
-from src.config import cfg
+from .config import cfg
 from src.utils import load_and_resample
+
 
 class AudioArtifactsDataset(Dataset):
     def __init__(self, csv_path: str, data_path: str | None = None, interval: int = 1):
@@ -28,7 +29,7 @@ class AudioArtifactsDataset(Dataset):
         if waveform.shape[-1] >= target_length:
             max_start = waveform.shape[-1] - target_length
             start = random.randint(0, max_start) if max_start > 0 else 0
-            waveform = waveform[start:start + target_length]
+            waveform = waveform[start : start + target_length]
         else:
             pad = target_length - waveform.shape[-1]
             waveform = torch.nn.functional.pad(waveform, (0, pad))

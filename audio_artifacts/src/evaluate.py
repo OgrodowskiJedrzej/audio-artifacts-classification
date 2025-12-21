@@ -3,6 +3,7 @@ from torch.utils.data import DataLoader
 from sklearn.metrics import classification_report, confusion_matrix, precision_score, recall_score, f1_score
 import mlflow
 
+
 def test(test_dataloader: DataLoader, model, criterion, device):
     model.eval()
     total_test_loss = 0
@@ -41,13 +42,7 @@ def test(test_dataloader: DataLoader, model, criterion, device):
     print(classification_report(all_labels, all_preds, target_names=["no_artefact", "artefact"], zero_division=0))
     print("=" * 50)
 
-    metrics = {
-        "test_loss": avg_test_loss,
-        "test_accuracy": accuracy,
-        "test_precision": precision,
-        "test_recall": recall,
-        "test_f1_score": f1
-    }
+    metrics = {"test_loss": avg_test_loss, "test_accuracy": accuracy, "test_precision": precision, "test_recall": recall, "test_f1_score": f1}
     mlflow.log_metrics(metrics)
 
     return metrics

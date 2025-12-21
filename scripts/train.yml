@@ -1,0 +1,20 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandJob.schema.json
+
+display_name: cluster-gpu-training
+experiment_name: cluster-training-wavegram_5s
+
+
+code: ../audio_artifacts
+
+command: >
+  python -m src.main
+  --data_path ${{inputs.data}}
+  --train
+
+environment: azureml:pytorch-audio-env@latest
+compute: azureml:azuremlgpu
+
+inputs:
+  data:
+    type: uri_folder
+    path: azureml:audio_artifacts_dataset:V1.0
