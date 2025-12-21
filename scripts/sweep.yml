@@ -1,0 +1,67 @@
+$schema: https://azuremlschemas.azureedge.net/latest/sweepJob.schema.json
+type: sweep
+
+display_name: hpo-audio-artifacts
+experiment_name: hpo-audio-artifacts
+description: Hyperparameter sweep for audio classification training.
+
+compute: azureml:${{inputs.compute}}
+
+trial:
+  command: >
+    python -m src.main
+    --data_path ${{inputs.data}}
+    --pretrained_lr ${{inputs.pretrained_lr}}
+    --head_lr ${{inputs.head_lr}}
+    --unfreeze_last_layers ${{inputs.unfreeze_last_layers}}
+    --weight_decay ${{inputs.weight_decay}}
+    --batch_size ${{inputs.batch_size}}
+    --train
+  code: ../audio_artifacts/
+  environment: azureml:pytorch-audio-env@latest
+
+inputs:
+  compute:
+    type: string
+    default: azureml-compute-target
+
+  data:
+    type: uri_folder
+    path: azureml:audio_dataset:1
+
+  pretrained_lr:
+    type: number
+    values: [5e-5, 1e-4, 2e-4, 1e-5]
+
+  head_lr:
+    type: number
+    distribution: uniform
+    min: 0.008
+    max: 0.001
+
+  weight_decay:
+    type: number
+    values: [0.01, 0.001, 0.008]
+
+  unfreeze_last_layers:
+    type: integer
+    default: 3
+
+  batch_size:
+    type: integer
+    default: 256
+
+sampling_algorithm: bayesian
+
+objective:
+  primary_metric: test_f1_score
+  goal: maximize
+
+limits:
+  max_total_trials: 10
+  max_concurrent_trials: 2
+
+early_termination:
+  type: median
+  delay_evaluation: 2
+  evaluation_interval: 1

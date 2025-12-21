@@ -209,4 +209,7 @@ __marimo__/
 trained_models/
 *.pth
 /dataset
+test_data/
+uv.lock
 todo.txt
+.DS_Store
