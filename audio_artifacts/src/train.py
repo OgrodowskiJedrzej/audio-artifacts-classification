@@ -5,6 +5,7 @@ import mlflow
 
 from src.classifier_module import PANNBasedClassifier
 
+
 def training_loop(
     train_dataloader: DataLoader,
     validate_dataloader: DataLoader,
@@ -16,19 +17,19 @@ def training_loop(
     max_lr_hd: float = 8e-3,
     weight_decay: float,
     model: PANNBasedClassifier,
-    criterion
+    criterion,
 ):
     model.train()
     device = model.device
 
-    optimizer = AdamW([
-        {"params": [p for n, p in model.named_parameters() if "panns_model" in n and p.requires_grad], "lr": pretrained_lr, "weight_decay": weight_decay},
-        {"params": [p for n, p in model.named_parameters() if "panns_model" not in n], "lr": head_lr, "weight_decay": weight_decay}
-    ])
+    optimizer = AdamW(
+        [
+            {"params": [p for n, p in model.named_parameters() if "panns_model" in n and p.requires_grad], "lr": pretrained_lr, "weight_decay": weight_decay},
+            {"params": [p for n, p in model.named_parameters() if "panns_model" not in n], "lr": head_lr, "weight_decay": weight_decay},
+        ]
+    )
 
-    scheduler = lr_scheduler.OneCycleLR(
-        optimizer, max_lr=[max_lr_pt, max_lr_hd],
-        steps_per_epoch=len(train_dataloader), epochs=epochs)
+    scheduler = lr_scheduler.OneCycleLR(optimizer, max_lr=[max_lr_pt, max_lr_hd], steps_per_epoch=len(train_dataloader), epochs=epochs)
 
     for epoch in range(epochs):
         total_loss = 0
@@ -68,11 +69,12 @@ def training_loop(
                 "avg_loss": avg_loss,
                 "train_accuracy": train_accuracy,
                 "val_loss": val_loss,
-                "val_accuracy": val_accuracy
+                "val_accuracy": val_accuracy,
             }
         )
 
     return model
+
 
 def validate(model, validate_dataloader: DataLoader, criterion, device):
     model.eval()

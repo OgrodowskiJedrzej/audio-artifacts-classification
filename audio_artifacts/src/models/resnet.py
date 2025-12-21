@@ -6,24 +6,25 @@ from torchlibrosa.augmentation import SpecAugmentation
 
 from src.models.common_architecture import ConvBlock, do_mixup, init_bn, init_layer
 
+
 def _resnet_conv1x1(in_planes, out_planes):
-    #1x1 convolution
+    # 1x1 convolution
     return nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=1, bias=False)
 
+
 def _resnet_conv3x3(in_planes, out_planes):
-    #3x3 convolution with padding
-    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=1,
-                     padding=1, groups=1, bias=False, dilation=1)
+    # 3x3 convolution with padding
+    return nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=1, padding=1, groups=1, bias=False, dilation=1)
+
 
 class _ResnetBottleneck(nn.Module):
     expansion = 4
 
-    def __init__(self, inplanes, planes, stride=1, downsample=None, groups=1,
-                 base_width=64, dilation=1, norm_layer=None):
+    def __init__(self, inplanes, planes, stride=1, downsample=None, groups=1, base_width=64, dilation=1, norm_layer=None):
         super(_ResnetBottleneck, self).__init__()
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
-        width = int(planes * (base_width / 64.)) * groups
+        width = int(planes * (base_width / 64.0)) * groups
         self.stride = stride
         # Both self.conv2 and self.downsample layers downsample the input when stride != 1
         self.conv1 = _resnet_conv1x1(inplanes, width)
@@ -73,10 +74,9 @@ class _ResnetBottleneck(nn.Module):
 
         return out
 
+
 class _ResNet(nn.Module):
-    def __init__(self, block, layers, zero_init_residual=False,
-                 groups=1, width_per_group=64, replace_stride_with_dilation=None,
-                 norm_layer=None):
+    def __init__(self, block, layers, zero_init_residual=False, groups=1, width_per_group=64, replace_stride_with_dilation=None, norm_layer=None):
         super(_ResNet, self).__init__()
 
         if norm_layer is None:
@@ -90,18 +90,14 @@ class _ResNet(nn.Module):
             # the 2x2 stride with a dilated convolution instead
             replace_stride_with_dilation = [False, False, False]
         if len(replace_stride_with_dilation) != 3:
-            raise ValueError("replace_stride_with_dilation should be None "
-                             "or a 3-element tuple, got {}".format(replace_stride_with_dilation))
+            raise ValueError("replace_stride_with_dilation should be None or a 3-element tuple, got {}".format(replace_stride_with_dilation))
         self.groups = groups
         self.base_width = width_per_group
 
         self.layer1 = self._make_layer(block, 64, layers[0], stride=1)
-        self.layer2 = self._make_layer(block, 128, layers[1], stride=2,
-                                       dilate=replace_stride_with_dilation[0])
-        self.layer3 = self._make_layer(block, 256, layers[2], stride=2,
-                                       dilate=replace_stride_with_dilation[1])
-        self.layer4 = self._make_layer(block, 512, layers[3], stride=2,
-                                       dilate=replace_stride_with_dilation[2])
+        self.layer2 = self._make_layer(block, 128, layers[1], stride=2, dilate=replace_stride_with_dilation[0])
+        self.layer3 = self._make_layer(block, 256, layers[2], stride=2, dilate=replace_stride_with_dilation[1])
+        self.layer4 = self._make_layer(block, 512, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
 
     def _make_layer(self, block, planes, blocks, stride=1, dilate=False):
         norm_layer = self._norm_layer
@@ -128,13 +124,10 @@ class _ResNet(nn.Module):
                 init_bn(downsample[2])
 
         layers = []
-        layers.append(block(self.inplanes, planes, stride, downsample, self.groups,
-                            self.base_width, previous_dilation, norm_layer))
+        layers.append(block(self.inplanes, planes, stride, downsample, self.groups, self.base_width, previous_dilation, norm_layer))
         self.inplanes = planes * block.expansion
         for _ in range(1, blocks):
-            layers.append(block(self.inplanes, planes, groups=self.groups,
-                                base_width=self.base_width, dilation=self.dilation,
-                                norm_layer=norm_layer))
+            layers.append(block(self.inplanes, planes, groups=self.groups, base_width=self.base_width, dilation=self.dilation, norm_layer=norm_layer))
 
         return nn.Sequential(*layers)
 
@@ -146,10 +139,9 @@ class _ResNet(nn.Module):
 
         return x
 
-class ResNet54(nn.Module):
-    def __init__(self, sample_rate, window_size, hop_size, mel_bins, fmin,
-        fmax, classes_num):
 
+class ResNet54(nn.Module):
+    def __init__(self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num):
         super(ResNet54, self).__init__()
 
         window = "hann"
@@ -160,18 +152,13 @@ class ResNet54(nn.Module):
         top_db = None
 
         # Spectrogram extractor
-        self.spectrogram_extractor = Spectrogram(n_fft=window_size, hop_length=hop_size,
-            win_length=window_size, window=window, center=center, pad_mode=pad_mode,
-            freeze_parameters=True)
+        self.spectrogram_extractor = Spectrogram(n_fft=window_size, hop_length=hop_size, win_length=window_size, window=window, center=center, pad_mode=pad_mode, freeze_parameters=True)
 
         # Logmel feature extractor
-        self.logmel_extractor = LogmelFilterBank(sr=sample_rate, n_fft=window_size,
-            n_mels=mel_bins, fmin=fmin, fmax=fmax, ref=ref, amin=amin, top_db=top_db,
-            freeze_parameters=True)
+        self.logmel_extractor = LogmelFilterBank(sr=sample_rate, n_fft=window_size, n_mels=mel_bins, fmin=fmin, fmax=fmax, ref=ref, amin=amin, top_db=top_db, freeze_parameters=True)
 
         # Spec augmenter
-        self.spec_augmenter = SpecAugmentation(time_drop_width=64, time_stripes_num=2,
-            freq_drop_width=8, freq_stripes_num=2)
+        self.spec_augmenter = SpecAugmentation(time_drop_width=64, time_stripes_num=2, freq_drop_width=8, freq_stripes_num=2)
 
         self.bn0 = nn.BatchNorm2d(64)
 
@@ -192,13 +179,12 @@ class ResNet54(nn.Module):
         init_layer(self.fc1)
         init_layer(self.fc_audioset)
 
-
     def forward(self, input, mixup_lambda=None):
         """
         Input: (batch_size, data_length)"""
 
-        x = self.spectrogram_extractor(input)   # (batch_size, 1, time_steps, freq_bins)
-        x = self.logmel_extractor(x)    # (batch_size, 1, time_steps, mel_bins)
+        x = self.spectrogram_extractor(input)  # (batch_size, 1, time_steps, freq_bins)
+        x = self.logmel_extractor(x)  # (batch_size, 1, time_steps, mel_bins)
 
         x = x.transpose(1, 3)
         x = self.bn0(x)
