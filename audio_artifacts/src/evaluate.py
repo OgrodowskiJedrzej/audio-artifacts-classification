@@ -1,6 +1,7 @@
 import torch
 from torch.utils.data import DataLoader
-from sklearn.metrics import classification_report, confusion_matrix, precision_score, recall_score, f1_score
+import torch.nn.functional as F
+from sklearn.metrics import classification_report, confusion_matrix, precision_score, recall_score, f1_score, average_precision_score, roc_auc_score
 import mlflow
 
 
@@ -9,6 +10,7 @@ def test(test_dataloader: DataLoader, model, criterion, device):
     total_test_loss = 0
     all_labels = []
     all_preds = []
+    all_scores = []
 
     with torch.no_grad():
         for waveform, label in test_dataloader:
@@ -18,10 +20,13 @@ def test(test_dataloader: DataLoader, model, criterion, device):
             outputs = model(waveform)
             loss = criterion(outputs, label)
             total_test_loss += loss.item()
+            probs = F.softmax(outputs, dim=1)
+            scores = probs[:, 1]
 
             _, predicted = torch.max(outputs.data, 1)
             all_labels.extend(label.cpu().numpy())
             all_preds.extend(predicted.cpu().numpy())
+            all_scores.extend(scores.cpu().numpy())
 
     avg_test_loss = total_test_loss / len(test_dataloader)
 
@@ -30,19 +35,23 @@ def test(test_dataloader: DataLoader, model, criterion, device):
     recall = recall_score(all_labels, all_preds, average="binary", zero_division=0)
     f1 = f1_score(all_labels, all_preds, average="binary", zero_division=0)
     conf_matrix = confusion_matrix(all_labels, all_preds)
+    mean_average_precision = average_precision_score(all_labels, all_scores)
+    auc = roc_auc_score(all_labels, all_scores)
 
     print(f"Test Loss: {avg_test_loss:.4f}")
     print(f"Test Accuracy: {accuracy:.2f}%")
     print(f"Precision: {precision:.4f}")
     print(f"Recall: {recall:.4f}")
     print(f"F1 Score: {f1:.4f}")
+    print(f"mAP: {mean_average_precision:.4f}")
+    print(f"roc: {auc:.4f}")
     print("Confusion Matrix:")
     print(conf_matrix)
     print("\nClassification Report:")
     print(classification_report(all_labels, all_preds, target_names=["no_artefact", "artefact"], zero_division=0))
     print("=" * 50)
 
-    metrics = {"test_loss": avg_test_loss, "test_accuracy": accuracy, "test_precision": precision, "test_recall": recall, "test_f1_score": f1}
+    metrics = {"test_loss": avg_test_loss, "test_accuracy": accuracy, "test_precision": precision, "test_recall": recall, "test_f1_score": f1, "test_auc": auc, "test_mAP": mean_average_precision}
     mlflow.log_metrics(metrics)
 
     return metrics
