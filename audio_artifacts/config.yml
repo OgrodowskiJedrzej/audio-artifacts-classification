@@ -1,8 +1,8 @@
 data:
   root: dataset
   train_csv: train_5s_aug.csv
-  val_csv: test_5s.csv
-  test_csv: val_5s.csv
+  val_csv: val_5s.csv
+  test_csv: test_5s.csv
   sample_rate: 32000
 
 training:
@@ -24,4 +24,4 @@ model:
 
 weights:
   wavegram_logmel_weights: src/Wavegram_Logmel_Cnn14_mAP=0.439.pth
-  resnet_weights: Placeholder.pth
+  resnet_weights: src/ResNet54_mAP=0.429.pth

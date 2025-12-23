@@ -32,9 +32,10 @@ Training was performed on the AzureML platform using an NVIDIA A100 GPU. The mod
 ## Results
 The obtained results are promising and the model will be further evaluated in a production environment for upcoming hearing aid platforms.
 
-| Model           | F1-score | Precision | Recall |
-| --------------- | -------- | --------- | ------ |
-| Wavegram-logmel |   0.95   |   0.96    |  0.94  |
+| Model           |  F1-score  |  Precision  |  Recall  |    AUC   |
+| --------------- | ---------- | ----------- | -------- | -------- |
+| Wavegram-logmel |   0.9532   |   0.9641    |  0.9426  |  0.9862  |
+|    Resnet54     |   0.9466   |   0.9918    |  0.9053  |  0.9900  |      
 
 ## Further considerations
 Future work will focus on exploring attention-based detection mechanisms, and investigating a hybrid architecture combining the wavegram approach with attention modules.
@@ -44,7 +45,7 @@ Future work will focus on exploring attention-based detection mechanisms, and in
 <!-- CONTACT -->
 ## Contact
 
-Jedrzej Ogrodowski (JDOG)
+Jedrzej Ogrodowski
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
