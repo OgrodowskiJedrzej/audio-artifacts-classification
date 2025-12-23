@@ -81,7 +81,8 @@ def main():
             print(f"Could not save file: {e}")
 
         try:
-            mlflow.pytorch.log_model(model, name=f"{cfg["model"]["model_type"]}_trained")
+            model_type = cfg["model"]["model_type"]
+            mlflow.pytorch.log_model(model, name=f"{model_type}_trained")
         except Exception as e:
             print(f"Could not log model: {e}")
 
